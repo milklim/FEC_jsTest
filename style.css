@@ -1,0 +1,26 @@
+body {
+    background: #81a870;
+}
+
+#table-wrapper {
+    width: 60%;
+    margin: 0 auto;
+    padding-top: 15px;
+}
+
+table {
+    width: 100%;
+}
+
+td {
+    padding: 5px;
+    border: 1px solid grey;
+    text-align: center;
+}
+
+td img {
+    opacity: .6;
+}
+td img:hover {
+    opacity: 1;
+}
