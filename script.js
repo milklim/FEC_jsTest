@@ -48,41 +48,6 @@ function delRow(elem) {
     table.deleteRow(row.rowIndex);
 }
 
-// function draw_Table(data) {
-//     var table = document.getElementById("myTable");
-//     var index = 0;
-//     createRow(table, index++, { "name": "Name", "sex": "Sex", "born": 'Born', "died": 'Died', "father": "Father", "mother": "Mother", "age": "Age" });
-//
-//     for (var j = index; j <= data.length; j++) {
-//         createRow(table, j, data[j - 1]);
-//     }
-// }
-//
-// function createRow(table, index, item) {
-//     var row = table.insertRow(index);
-//     var cell1 = row.insertCell(0);
-//     var cell2 = row.insertCell(1);
-//     var cell3 = row.insertCell(2);
-//     var cell4 = row.insertCell(3);
-//     var cell5 = row.insertCell(4);
-//     var cell6 = row.insertCell(5);
-//     var cell7 = row.insertCell(6);
-//     var cell8 = row.insertCell(7);
-//
-//     cell1.innerHTML = item.name,
-//         cell2.innerHTML = item.sex,
-//         cell3.innerHTML = item.born,
-//         cell4.innerHTML = item.died,
-//         cell5.innerHTML = item.father,
-//         cell6.innerHTML = item.mother,
-//         cell7.innerHTML = (item.died - item.born) || 'Age',
-//         cell8.innerHTML = "<button type='button' onclick='delRow()' >del</button>";
-// }
-//
-// function delRow() {
-//     alert('44');
-// }
-
 function getData(key) {
     var data = {
         people: [
