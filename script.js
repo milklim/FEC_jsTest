@@ -1,10 +1,14 @@
-
 (function run() {
     var targetNode = document.querySelector('#table-wrapper');
-    // drawTable(targetNode, getData('people'), getData('add_columns'), callback);
-    drawTable(targetNode, getAverageLifetimeList());
-    // getAverageLifetimeList();
+    var data = getData('people');
+
+    drawTable(targetNode, data, getData('add_columns'), callback);
+    drawTable(targetNode, getAverageLifetimeList(data));
+    drawTable(targetNode, getMotherChildrenComparedAgesList(data));
+
+ //   drawTable(targetNode, getMotherChildrenComparedAgesList_worse(data));
 })();
+
 
 function drawTable(target, dataArray, additionalColumns, callback) {
     var table = document.createElement('table');
@@ -44,21 +48,20 @@ function callback(column, obj) {
     var columns = getData('add_columns');
     switch(column.toLowerCase()) {
         case columns[0]:
-            return obj.died - obj.born;
+            return getAge(obj);
         case columns[1]:
             return '<img src="icons/delete.svg" width="20px" style="cursor: pointer" onclick="delRow(this)">';
     }
 }
 
-function getAverageLifetimeList() {
-    var data = getData('people');
 
+function getAverageLifetimeList(data) {
     var transformedData = {};
     data.forEach(function (item) {
         var century = getCentury(item);
         if (!transformedData[century]) transformedData[century] = [];
 
-        transformedData[century].push(item.died - item.born);
+        transformedData[century].push(getAge(item));
     });
     
     var resultArray = [];
@@ -66,11 +69,9 @@ function getAverageLifetimeList() {
         var agesArr = transformedData[key];
         resultArray.push({
             'century': key,
-            'life-time': Math.round(agesArr.length === 0
+            'life-time': agesArr.length === 0
                 ? 'N/A'
-                : agesArr.reduce(function(sum, current) {
-                    return sum + current;
-                }, 0) * 100 / agesArr.length, 2) / 100
+                : Math.round(agesArr.reduce(function(sum, current) {return sum + current}, 0) * 100 / agesArr.length) / 100
         });
     });
     function getCentury(item) {
@@ -81,7 +82,55 @@ function getAverageLifetimeList() {
             : centuryDied + ' - ' + (centuryDied + 100);
     }
 
-    return resultArray.sort(function(b, a){return b['life-time'] - a['life-time']});
+    // return resultArray.sort(function(b, a){return b['life-time'] - a['life-time']});
+    return resultArray.sort(function(a, b){return b['century'] < a['century']});
+}
+
+
+function getMotherChildrenComparedAgesList(data) {
+    var women = {};
+    data.forEach(function (item) { (item.sex === 'f') && (women[item.name] = {'age': getAge(item)}) });
+
+    var withMother = data.filter(function (item) {return Object.keys(women).includes(item.mother)});
+
+    var resultArr = [];
+    withMother.forEach(function (item) {
+        var itemAge = getAge(item);
+        var itemsMotherAge = women[item.mother].age;
+        resultArr.push({
+            'name': item.name,
+            'age': itemAge,
+            'mother': item.mother,
+            'mothers-age': itemsMotherAge,
+            'age-difference': Math.abs(itemsMotherAge - itemAge)
+        });
+    });
+   return resultArr;
+}
+
+function getMotherChildrenComparedAgesList_worse(data) {
+    var womenList = data.filter(function (item) {return item.sex === 'f'}).map(function (item) {return item.name});
+    var withMother = data.filter(function (item) {return womenList.includes(item.mother)});
+
+    var resultArr = [];
+    withMother.forEach(function (item) {
+        var itemsMother = data.filter(function (obj) {return obj.name === item.mother})[0];
+        var itemAge = getAge(item);
+        var itemsMotherAge = getAge(itemsMother);
+        resultArr.push({
+            'name': item.name,
+            'age': itemAge,
+            'mother': item.mother,
+            'mothers-age': itemsMotherAge,
+            'age-difference': Math.abs(itemsMotherAge - itemAge)
+        });
+    });
+    return resultArr;
+}
+
+
+function getAge(item) {
+    return item.died - item.born;
 }
 
 function getData(key) {
