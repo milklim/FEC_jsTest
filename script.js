@@ -2,7 +2,8 @@
 (function run() {
     var targetNode = document.querySelector('#table-wrapper');
     // drawTable(targetNode, getData('people'), getData('add_columns'), callback);
-    getAverageLifetime();
+    drawTable(targetNode, getAverageLifetimeList());
+    // getAverageLifetimeList();
 })();
 
 function drawTable(target, dataArray, additionalColumns, callback) {
@@ -49,16 +50,38 @@ function callback(column, obj) {
     }
 }
 
-function getAverageLifetime() {
+function getAverageLifetimeList() {
     var data = getData('people');
-    var item = data[20];
-    var centuryBorn = Math.trunc(item.born / 100) * 100;
-    var centuryDied = Math.trunc(item.died / 100) * 100;
-    var century = (centuryDied - item.born > item.died - centuryDied)
-        ? centuryBorn + ' - ' + centuryDied
-        : centuryDied + ' - ' + (centuryDied + 100);
-    var age = item.died - item.born;
-    alert(century);
+
+    var transformedData = {};
+    data.forEach(function (item) {
+        var century = getCentury(item);
+        if (!transformedData[century]) transformedData[century] = [];
+
+        transformedData[century].push(item.died - item.born);
+    });
+    
+    var resultArray = [];
+    Object.keys(transformedData).forEach(function (key) {
+        var agesArr = transformedData[key];
+        resultArray.push({
+            'century': key,
+            'life-time': Math.round(agesArr.length === 0
+                ? 'N/A'
+                : agesArr.reduce(function(sum, current) {
+                    return sum + current;
+                }, 0) * 100 / agesArr.length, 2) / 100
+        });
+    });
+    function getCentury(item) {
+        var centuryBorn = Math.trunc(item.born / 100) * 100;
+        var centuryDied = Math.trunc(item.died / 100) * 100;
+        return (centuryDied - item.born > item.died - centuryDied)
+            ? centuryBorn + ' - ' + centuryDied
+            : centuryDied + ' - ' + (centuryDied + 100);
+    }
+
+    return resultArray.sort(function(b, a){return b['life-time'] - a['life-time']});
 }
 
 function getData(key) {
