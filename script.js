@@ -1,7 +1,8 @@
 
 (function run() {
     var targetNode = document.querySelector('#table-wrapper');
-    drawTable(targetNode, getData('people'), getData('add_columns'), callback);
+    // drawTable(targetNode, getData('people'), getData('add_columns'), callback);
+    getAverageLifetime();
 })();
 
 function drawTable(target, dataArray, additionalColumns, callback) {
@@ -32,6 +33,12 @@ function drawTable(target, dataArray, additionalColumns, callback) {
     }
 }
 
+function delRow(elem) {
+    var row = elem.parentNode.parentNode;
+    var table = row.parentNode;
+    table.deleteRow(row.rowIndex);
+}
+
 function callback(column, obj) {
     var columns = getData('add_columns');
     switch(column.toLowerCase()) {
@@ -42,10 +49,16 @@ function callback(column, obj) {
     }
 }
 
-function delRow(elem) {
-    var row = elem.parentNode.parentNode;
-    var table = row.parentNode;
-    table.deleteRow(row.rowIndex);
+function getAverageLifetime() {
+    var data = getData('people');
+    var item = data[20];
+    var centuryBorn = Math.trunc(item.born / 100) * 100;
+    var centuryDied = Math.trunc(item.died / 100) * 100;
+    var century = (centuryDied - item.born > item.died - centuryDied)
+        ? centuryBorn + ' - ' + centuryDied
+        : centuryDied + ' - ' + (centuryDied + 100);
+    var age = item.died - item.born;
+    alert(century);
 }
 
 function getData(key) {
